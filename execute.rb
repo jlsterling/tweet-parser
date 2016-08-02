@@ -19,26 +19,21 @@ end
 file_name = file[-2]
 condition = 'en'
 matcher = 'lang'
-tweets = []
-
-File.readlines(file_location).each_with_index do |tweet, i|
-  puts "Reading line #{i}"
-
-  tweet_hash = JSON.parse(tweet)
-  tweets << {
-      text: tweet_hash['text'],
-      id: tweet_hash['id'],
-      is_quote_status: tweet_hash['is_quote_status'],
-      lang: tweet_hash['lang'],
-      created_at: tweet_hash['created_at']
-  } if tweet_hash[matcher] == condition
-end
 
 CSV.open("#{file_name}.csv", "w") do |f|
-  count = tweets.count
+  File.readlines(file_location).each_with_index do |tweet, i|
+    puts "Reading line #{i}"
+    tweet_hash = JSON.parse(tweet)
 
-  tweets.each_with_index{ |tweet, i|
-    puts "printing line #{i} of #{count}"
-    f << tweet.values
-  }
+    if tweet_hash[matcher] == condition
+      puts 'Match found, printing line #{i}'
+      f << [
+            tweet_hash['text'],
+            tweet_hash['id'],
+            tweet_hash['is_quote_status'],
+            tweet_hash['lang'],
+            tweet_hash['created_at']
+      ]
+    end
+  end
 end
